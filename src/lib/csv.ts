@@ -1,7 +1,9 @@
 import Papa from 'papaparse';
 import type { ParsedRow } from './types';
 
-const REQUIRED_COLUMNS = ['順位', 'プレイヤーID', 'プレイヤー名', '対局数', '累計打点'];
+const REQUIRED_COLUMNS = ['順位', 'プレイヤーID', 'プレイヤー名', '累計打点'];
+/** 大会の形式によって「対局数」か「対戦数」のどちらかの列になる */
+const GAMES_COLUMNS = ['対局数', '対戦数'];
 
 /** UTF-8 として不正なバイトがあれば Shift_JIS として読み直す */
 export function decodeCsv(buf: ArrayBuffer): string {
@@ -35,8 +37,10 @@ export function parseResultsCsv(text: string): ParseOutcome {
     transformHeader: (h) => h.trim(),
   });
   const fields = parsed.meta.fields ?? [];
+  const gamesColumn = GAMES_COLUMNS.find((c) => fields.includes(c));
   const missing = REQUIRED_COLUMNS.filter((c) => !fields.includes(c));
-  if (missing.length > 0) {
+  if (!gamesColumn) missing.splice(3, 0, '対局数');
+  if (!gamesColumn || missing.length > 0) {
     return {
       ok: false,
       error: `このファイルは対応形式ではありません（不足している列: ${missing.join('、')}）`,
@@ -49,7 +53,7 @@ export function parseResultsCsv(text: string): ParseOutcome {
     const playerId = (r['プレイヤーID'] ?? '').trim();
     const playerName = (r['プレイヤー名'] ?? '').trim();
     const rank = toNumber(r['順位']);
-    const games = toNumber(r['対局数']);
+    const games = toNumber(r[gamesColumn]);
     const totalPoints = toNumber(r['累計打点']);
     if (!playerId || !playerName || ![rank, games, totalPoints].every(Number.isFinite)) {
       skipped++;

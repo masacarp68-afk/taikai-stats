@@ -36,6 +36,38 @@ describe('decodeCsv', () => {
 });
 
 describe('parseResultsCsv', () => {
+  it('対局数の代わりに対戦数の列がある形式も読み込む', () => {
+    const text =
+      '順位,プレイヤーID,プレイヤー名,点数,累計打点,対戦数,1位獲得回数,2位獲得回数,3位獲得回数,4位獲得回数,\n' +
+      '1,111,A,733.2000,733.2,78,26,22,16,14\n' +
+      '123,222,B,131.2000,131.2,9,4,2,0,3\n';
+    const outcome = parseResultsCsv(text);
+    if (!outcome.ok) throw new Error(outcome.error);
+    expect(outcome.rows).toEqual([
+      { rank: 1, playerId: '111', playerName: 'A', games: 78, totalPoints: 733.2 },
+      { rank: 123, playerId: '222', playerName: 'B', games: 9, totalPoints: 131.2 },
+    ]);
+  });
+
+  it('チーム名の列がある形式も読み込む', () => {
+    const text =
+      '順位,プレイヤーID,プレイヤー名,チーム名,対局数,累計打点,表示得点,備考,点数修正,\n' +
+      '1,111,A,柳に小野 副将,79,563,563.0,,0.0\n' +
+      '2,222,B,,27,555.8,555.8,,0.0\n';
+    const outcome = parseResultsCsv(text);
+    if (!outcome.ok) throw new Error(outcome.error);
+    expect(outcome.rows.map((r) => [r.playerId, r.games, r.totalPoints])).toEqual([
+      ['111', 79, 563],
+      ['222', 27, 555.8],
+    ]);
+  });
+
+  it('対局数も対戦数もなければエラー', () => {
+    const outcome = parseResultsCsv('順位,プレイヤーID,プレイヤー名,累計打点\n1,1,a,3\n');
+    expect(outcome.ok).toBe(false);
+    if (!outcome.ok) expect(outcome.error).toContain('対局数');
+  });
+
   it('実データを全行読み込む', () => {
     const outcome = parseResultsCsv(decodeCsv(fixture('season-708677.csv')));
     if (!outcome.ok) throw new Error(outcome.error);
