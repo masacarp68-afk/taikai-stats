@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatPercent, formatPeriod, formatPoints } from './format';
+import { formatPercent, formatPeriod, formatPoints, formatRanks } from './format';
 
 describe('formatPeriod', () => {
   it('1日開催は日付1つ', () => {
@@ -26,5 +26,18 @@ describe('formatPercent', () => {
     expect(formatPercent(0.5)).toBe('50%');
     expect(formatPercent(2 / 3)).toBe('67%');
     expect(formatPercent(null)).toBe('—');
+  });
+});
+
+describe('formatRanks', () => {
+  it('パート1つなら数字だけ、複数なら「パート名: n位」を / でつなぐ', () => {
+    expect(formatRanks([{ partId: 'a', partName: '2-1', rank: 5 }])).toBe('5');
+    expect(
+      formatRanks([
+        { partId: 'a', partName: '2-1', rank: 5 },
+        { partId: 'c', partName: '2-3', rank: 12 },
+      ]),
+    ).toBe('2-1: 5位 / 2-3: 12位');
+    expect(formatRanks([])).toBe('');
   });
 });
