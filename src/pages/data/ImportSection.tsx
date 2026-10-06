@@ -14,6 +14,8 @@ export function ImportSection({ data }: { data: Dataset }) {
   const [dragOver, setDragOver] = useState(false);
   /** 直前に保存した大会。続くファイルの取り込み先の初期値にする */
   const [lastTournamentId, setLastTournamentId] = useState<string | null>(null);
+  /** 保存した時点の data。これと同じ間は、ライブクエリの更新待ち */
+  const [dataAtSave, setDataAtSave] = useState<Dataset | null>(null);
 
   async function addFiles(files: FileList) {
     const accepted: PendingFile[] = [];
@@ -44,10 +46,11 @@ export function ImportSection({ data }: { data: Dataset }) {
     setRejected(errors);
     setMessage('');
     setLastTournamentId(null);
+    setDataAtSave(null);
   }
 
   const current = queue[0];
-  const waitingForSaved = lastTournamentId !== null && !data.tournaments.some((t) => t.id === lastTournamentId);
+  const waitingForSaved = lastTournamentId !== null && data === dataAtSave && !data.tournaments.some((t) => t.id === lastTournamentId);
   return (
     <section className="card">
       <h2>CSV取り込み</h2>
@@ -95,7 +98,10 @@ export function ImportSection({ data }: { data: Dataset }) {
           onDone={(msg, tournamentId) => {
             setQueue((q) => q.slice(1));
             setMessage(msg);
-            if (tournamentId) setLastTournamentId(tournamentId);
+            if (tournamentId) {
+              setLastTournamentId(tournamentId);
+              setDataAtSave(data);
+            }
           }}
         />
       )}
