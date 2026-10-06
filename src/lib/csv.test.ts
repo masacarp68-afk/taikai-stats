@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { decodeCsv, extractMahjongSoulId, parseResultsCsv } from './csv';
+import { decodeCsv, extractMahjongSoulId, parseResultsCsv, partNameFromFileName } from './csv';
 
 function fixture(name: string): ArrayBuffer {
   const b = readFileSync(new URL(`../test/fixtures/${name}`, import.meta.url));
@@ -114,5 +114,13 @@ describe('parseResultsCsv', () => {
   it('データ行がなければエラー', () => {
     const outcome = parseResultsCsv(`${HEADER}\n`);
     expect(outcome.ok).toBe(false);
+  });
+});
+
+describe('partNameFromFileName', () => {
+  it('拡張子と「シーズン順位統計-」を取り除く', () => {
+    expect(partNameFromFileName('夏宵2-1.csv')).toBe('夏宵2-1');
+    expect(partNameFromFileName('シーズン順位統計-大会708677.csv')).toBe('大会708677');
+    expect(partNameFromFileName('ABC.CSV')).toBe('ABC');
   });
 });

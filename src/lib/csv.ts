@@ -21,6 +21,11 @@ export function extractMahjongSoulId(fileName: string): string | null {
   return m ? m[1] : null;
 }
 
+/** ファイル名からパート名の初期値を作る（例「夏宵2-1.csv」→「夏宵2-1」） */
+export function partNameFromFileName(fileName: string): string {
+  return fileName.replace(/\.csv$/i, '').replace(/^シーズン順位統計-/, '').trim();
+}
+
 export type ParseOutcome =
   | { ok: true; rows: ParsedRow[]; skipped: number }
   | { ok: false; error: string };
