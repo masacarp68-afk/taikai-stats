@@ -42,6 +42,7 @@ export function TournamentDetailPage({ data }: { data: Dataset }) {
   const { stat, parts, combined } = detail;
   const multi = parts.length > 1;
   const selectedPart = parts.find((p) => p.part.id === tab);
+  const activeTab = selectedPart ? tab : COMBINED;
   const toPlayer = (playerId: string) => navigate(`/players/${playerId}`);
   const tabs = [{ id: COMBINED, name: '合算' }, ...parts.map((p) => ({ id: p.part.id, name: p.part.name }))];
 
@@ -64,7 +65,7 @@ export function TournamentDetailPage({ data }: { data: Dataset }) {
         {multi && (
           <div className="tabs sub-tabs">
             {tabs.map((t) => (
-              <button key={t.id} className={tab === t.id ? 'tab active' : 'tab'} onClick={() => setTab(t.id)}>
+              <button key={t.id} className={activeTab === t.id ? 'tab active' : 'tab'} onClick={() => setTab(t.id)}>
                 {t.name}
               </button>
             ))}

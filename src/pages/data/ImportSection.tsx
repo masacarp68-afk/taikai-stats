@@ -47,6 +47,7 @@ export function ImportSection({ data }: { data: Dataset }) {
   }
 
   const current = queue[0];
+  const waitingForSaved = lastTournamentId !== null && !data.tournaments.some((t) => t.id === lastTournamentId);
   return (
     <section className="card">
       <h2>CSV取り込み</h2>
@@ -83,7 +84,8 @@ export function ImportSection({ data }: { data: Dataset }) {
         </p>
       ))}
       {message && <p className="muted">{message}</p>}
-      {current && (
+      {current && waitingForSaved && <p className="muted">保存中…</p>}
+      {current && !waitingForSaved && (
         <ImportForm
           key={current.key}
           file={current}
