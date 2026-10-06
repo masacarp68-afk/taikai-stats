@@ -64,3 +64,10 @@ tr.clickable:hover { background: var(--accent-weak); }
 .export-controls { justify-content: flex-end; margin-bottom: 8px; }
 .capture { background: var(--surface); padding: 12px; }
 .capture-title { margin: 0 0 8px; font-size: 1rem; }
+.notice { color: var(--accent); font-weight: 600; }
+.sub-tabs { margin-bottom: 8px; }
+.sub-tabs .tab { background: none; border: none; border-bottom: 2px solid transparent; border-radius: 0; font-size: 0.95rem; }
+.sub-tabs .tab.active { border-bottom-color: var(--accent); }
+tr.has-sub-row td { border-bottom: none; }
+tr.sub-row td { padding-top: 0; }
+.part-list { list-style: none; margin: 0; padding: 0 0 0 16px; display: grid; gap: 4px; }

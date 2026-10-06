@@ -1,14 +1,14 @@
 import { useMemo } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { DataTable, type Column } from '../components/DataTable';
-import { formatPeriod, formatPoints } from '../lib/format';
+import { formatPeriod, formatPoints, formatRanks } from '../lib/format';
 import { getPlayerDetail, type PlayerHistoryEntry } from '../lib/stats';
 import type { Dataset } from '../lib/types';
 
 const columns: Column<PlayerHistoryEntry>[] = [
   { key: 'title', label: '大会', render: (h) => h.title },
   { key: 'period', label: '開催期間', render: (h) => formatPeriod(h.tournament) },
-  { key: 'rank', label: '順位', num: true, render: (h) => h.rank },
+  { key: 'rank', label: '順位', render: (h) => formatRanks(h.ranks) },
   { key: 'games', label: '対局数', num: true, render: (h) => h.games },
   { key: 'points', label: '打点', num: true, render: (h) => formatPoints(h.totalPoints) },
 ];
